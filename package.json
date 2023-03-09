@@ -1,0 +1,15 @@
+{
+  "name": "selfsigned",
+  "version": "1.0.0",
+  "description": "",
+  "main": "signEwann.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jose": "^4.13.1",
+    "node-jose": "^2.2.0"
+  }
+}
