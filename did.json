@@ -1,0 +1,23 @@
+{
+    "@context": [
+      "https://www.w3.org/ns/did/v1"
+    ],
+    "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master:not-secure:did.json",
+    "verificationMethod": [
+      {
+        "@context": "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/",
+        "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master:not-secure:did.json",
+        "type": "JsonWebKey2020",
+        "publicKeyJwk": {
+          "kty": "RSA",
+          "n": "tceOWyl79uG_xoYNm5-INHVk5h2-em-OvXxG2vvT9oQ2WPonpNgrIwevOdAEe8zQo_BPY7ueNVFUCuAEMwlVpFFVHQzUjytNphGEJpHfcAYT09BfhZ7Dfh9cd9oO8b5qD_aJEogKHe13VFvuahpHQ561bqIjjzzG3EDp7BhRgs10HAiziq7tOdcHZEoxRZJ7Wy49aFKKGCKm9_FqUjVpOMkPkGB116LvF2uZ6W8gxPYMTNdBzhlfLYV5ttMWNE4kvTL7QP6vymO5GvO2n1Lff8TPzito7ZBn4FqqtPZ6CkzwdL1NdkMWHuB08omcIimTlqfTzreHZ2jRbCvEsqaCsQ",
+          "e": "AQAB",
+          "alg": "PS256",
+          "x5u": "https://raw.githubusercontent.com/egavard/payload-sign/master/certificate.crt"
+        }
+      }
+    ],
+    "assertionMethod": [
+      "did:web:raw.githubusercontent.com:egavard:payload-sign:master:not-secure:did.json#JWK2020-RSA"
+    ]
+  }
