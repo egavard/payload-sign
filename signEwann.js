@@ -6,6 +6,7 @@ const JsonLdParser = require("jsonld-streaming-parser").JsonLdParser;
 const SHACLValidator = require('rdf-validate-shacl')
 const factory = require('rdf-ext');
 const { Readable } = require('stream');
+const ParserN3 = require('@rdfjs/parser-n3')
 
 function hash(payload) {
     const payloadHash = crypto.createHash('sha256').update(payload).digest('hex');
@@ -28,9 +29,9 @@ async function signEwann() {
 
     const payloadJSON = fs.readFileSync('./EwannLegalPerson.json', 'utf-8');
     const payload = JSON.parse(payloadJSON.toString())
-    const payloadNormalized = await axios.post("http://localhost:3000/api/normalize", payload);
+    const payloadNormalized = await axios.post("https://compliance.lab.gaia-x.eu/development/api/normalize", payload);
 
-    const keyData = fs.readFileSync('./privateKey.key', 'utf-8');
+    const keyData = fs.readFileSync('./privateKey.pem', 'utf-8');
 
     const rsaPrivateKey = await jose.importPKCS8(
         keyData,
@@ -44,22 +45,40 @@ async function signEwann() {
 
     payload.proof = proof(jws);
     console.log(payload);
+    return payload;
 }
 
-async function validateShacl(){
-    const schaclFile = await axios.get("https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes");
-    const shaclStream = new Readable();
-    shaclStream.push(Buffer.from(JSON.stringify(schaclFile.data)));
-    shaclStream.push(null);
+async function validateShacl(sd){
+    const schaclFile = await axios.get("https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/participant");
+
+    const parserTTL = new ParserN3({ factory })
+
+    const shapeStream = new Readable();
+    shapeStream.push(schaclFile.data);
+    shapeStream.push(null);
+
+    
+    const shapes = await factory.dataset().import(parserTTL.import(shapeStream))
+
+    const payloadNormalized = await axios.post("https://compliance.lab.gaia-x.eu/development/api/normalize", sd);
+    const sdStream = new Readable();
+    sdStream.push(payloadNormalized.data.toString());
+    sdStream.push(null);
 
 
-    const myParser = new JsonLdParser();
-    const shapes = await factory.dataset().import(myParser.import(shaclStream))
-    console.log(shapes)
-    const validator = new SHACLValidator(shapes, null);
+
+    const sds = await factory.dataset().import(parserTTL.import(sdStream))
+    const validator = new SHACLValidator(shapes);
+
+    const results = validator.validate(sds);
+    console.log(results.conforms)
+
 
 }
 
+main = async () => {
+    const sd = await signEwann();
+    await validateShacl(sd);
+}
 
-signEwann();
-validateShacl();
+main();
