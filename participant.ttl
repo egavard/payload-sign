@@ -1,0 +1,81 @@
+# metamodel_version: 1.7.0
+# version: 2210.12
+@prefix gx-trust-framework: <http://w3id.org/gaia-x/gx-trust-framework/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+gx-trust-framework:LegalPersonShape a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:description "A list of direct participant with an legal mandate on this entity, e.g., as a subsidiary." ;
+            sh:maxCount 1 ;
+            sh:order 8 ;
+            sh:path gx-trust-framework:subOrganization ],
+        [ sh:description "Textual description of this organization." ;
+            sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path gx-trust-framework:description ],
+        [ sh:description "Legally binding name" ;
+            sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path gx-trust-framework:legalName ],
+        [ sh:description "Country’s registration number which identifies one specific entity. Valid formats are local, EUID, EORI, vatID, leiCode." ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:order 3 ;
+            sh:path gx-trust-framework:registrationNumber ],
+        [ sh:class <https://www.w3.org/2006/vcard/ns#Address> ;
+            sh:description "The full legal address of the organization." ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:nodeKind sh:BlankNode ;
+            sh:order 5 ;
+            sh:path gx-trust-framework:headquarterAddress ],
+        [ sh:description "A list of direct participant that this entity is a subOrganization of, if any." ;
+            sh:maxCount 1 ;
+            sh:order 7 ;
+            sh:path gx-trust-framework:parentOrganization ],
+        [ sh:class <https://www.w3.org/2006/vcard/ns#Address> ;
+            sh:description "The full legal address of the organization." ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:nodeKind sh:BlankNode ;
+            sh:order 4 ;
+            sh:path gx-trust-framework:legalAddress ],
+        [ sh:description "Legal form" ;
+            sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path gx-trust-framework:legalForm ],
+        [ sh:description "Unique LEI number as defined by https://www.gleif.org." ;
+            sh:maxCount 1 ;
+            sh:order 6 ;
+            sh:path gx-trust-framework:leiCode ] ;
+    sh:targetClass gx-trust-framework:LegalPerson .
+
+<https://www.w3.org/2006/vcard/ns#Address> a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:description "GPS in ISO 6709:2008/Cor 1:2009 format." ;
+            sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path <https://www.w3.org/2006/vcard/ns#gps> ],
+        [ sh:description "The v:locality property specifies the locality (e.g., city) of a postal address." ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:order 4 ;
+            sh:path <https://www.w3.org/2006/vcard/ns#locality> ],
+        [ sh:description "String of a street-address" ;
+            sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path <https://www.w3.org/2006/vcard/ns#postal-code> ],
+        [ sh:description "Physical location of head quarter in ISO 3166-1 alpha2, alpha-3 or numeric format" ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:order 0 ;
+            sh:path <https://www.w3.org/2006/vcard/ns#country-name> ],
+        [ sh:description "The v:street-address property specifies the street address of a postal address" ;
+            sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path <https://www.w3.org/2006/vcard/ns#street-address> ] ;
+    sh:targetClass <https://www.w3.org/2006/vcard/ns#Address> .
