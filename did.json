@@ -2,11 +2,11 @@
     "@context": [
       "https://www.w3.org/ns/did/v1"
     ],
-    "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master:did.json",
+    "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
     "verificationMethod": [
       {
         "@context": "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/",
-        "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master:did.json",
+        "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master#JWK2020-RSA",
         "type": "JsonWebKey2020",
         "publicKeyJwk": {
           "kty": "RSA",
@@ -18,6 +18,6 @@
       }
     ],
     "assertionMethod": [
-      "did:web:raw.githubusercontent.com:egavard:payload-sign:master:did.json#JWK2020-RSA"
+      "did:web:raw.githubusercontent.com:egavard:payload-sign:master#JWK2020-RSA"
     ]
   }
