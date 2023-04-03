@@ -47,7 +47,7 @@ export class SignatureService {
 }
 
 export class SHACLValidationService {
-    parserTTL = new ParserN3({factory})
+    parserTTL = new ParserN3({ factory })
 
     /**
      * 
@@ -63,7 +63,7 @@ export class SHACLValidationService {
         shapeStr.push(null)
 
 
-        const dataRDF = await jsonld.toRDF(data, {format: 'application/n-quads'});
+        const dataRDF = await jsonld.toRDF(data, { format: 'application/n-quads' });
         const input = new Readable()
         input.push(dataRDF)
         input.push(null)
@@ -91,7 +91,7 @@ async function signEwann(pathToData: string) {
     //Sign credential, then VP
 
     const verifiablePresentation = JSON.parse(payloadJSON.toString())
-    const credentialNormalized = await signService.normalize(verifiablePresentation)
+    const credentialNormalized = await signService.normalize(verifiablePresentation.verifiableCredential[0])
 
     const keyData = fs.readFileSync('dist/privateKey.pem', 'utf-8');
 
@@ -105,27 +105,34 @@ async function signEwann(pathToData: string) {
         .sign(rsaPrivateKey)
 
 
-    verifiablePresentation.proof = signService.proof(credentialJws);
+        verifiablePresentation.verifiableCredential[0].proof = signService.proof(credentialJws);
 
 
     return {
         "@context": "https://www.w3.org/2018/credentials/v1",
         "type": "VerifiablePresentation",
-        "verifiableCredential": [verifiablePresentation]
+        "verifiableCredential": [verifiablePresentation.verifiableCredential[0]]
     };
 }
 
 
-export async function main(payloadPath:string) {
+export async function main(payloadPath: string) {
     const shaclValidation = new SHACLValidationService()
 
     console.warn(`==== ${payloadPath} ====`)
     const sdRegistration = await signEwann(payloadPath);
     return await shaclValidation.validate("dist/participant.ttl", sdRegistration);
-    
+
+}
+
+async function testRegistration() {
+    console.log(JSON.stringify(await signEwann('dist/registration_vp.json')));
+    console.log(JSON.stringify(await signEwann('dist/registration_vp_invalid.json')));
+
 }
 
 main('dist/registration_vp.json');
 main('dist/registration_vp_invalid.json');
 main('dist/person.json');
 main('dist/person_invalid.json');
+testRegistration()
