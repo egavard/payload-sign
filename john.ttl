@@ -1,6 +1,0 @@
-@prefix gx-participant: <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/participant#> 
-.gx-participant:JohnDoe a gx-participant:LegalPerson ; 
- gx-participant:registrationNumber "John Doe" ; 
- gx-participant:age 30 ; 
- gx-participant:gender "male" ; 
- gx-participant:toto "dzdqz" .

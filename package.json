@@ -2,20 +2,36 @@
   "name": "selfsigned",
   "version": "1.0.0",
   "description": "",
+  "private": "true",
   "main": "signEwann.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "rimraf && npm run copy && vitest",
+    "coverage": "rimraf && npm run copy && vitest run --coverage",
+    "copy": "copyfiles -f src/participant.ttl src/privateKey.pem src/registration_vp.json src/registration_vp_invalid.json src/person.json src/person2.json src/person_invalid.json dist/",
+    "dev": "rimraf dist && npm run copy && tsc && node dist/signEwann.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@rdfjs/parser-jsonld": "^1.3.1",
     "@rdfjs/parser-n3": "^1.1.4",
     "axios": "^1.3.4",
     "jose": "^4.13.1",
     "jsonld": "^8.1.1",
-    "jsonld-streaming-parser": "^3.2.0",
     "node-jose": "^2.2.0",
     "rdf-ext": "^1.3.5",
     "rdf-validate-shacl": "^0.4.5"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "copyfiles": "^2.4.1",
+    "eslint": "^8.37.0",
+    "eslint-config-standard-with-typescript": "^34.0.1",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "rimraf": "^4.4.1",
+    "typescript": "^5.0.3",
+    "vitest": "^0.29.8"
   }
 }
