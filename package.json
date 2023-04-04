@@ -5,9 +5,9 @@
   "private": "true",
   "main": "signEwann.js",
   "scripts": {
-    "test": "rimraf && npm run copy && vitest",
+    "test": "rimraf dist/ && npm run copy && vitest",
     "coverage": "rimraf && npm run copy && vitest run --coverage",
-    "copy": "copyfiles -f src/participant.ttl src/privateKey.pem src/registration_vp.json src/registration_vp_invalid.json src/person.json src/person2.json src/person_invalid.json dist/",
+    "copy": "copyfiles -f src/participant.ttl src/privateKey.pem src/registration_vp.json src/registration_vp_invalid.json src/person.json src/person2.json src/person_invalid.json src/person_linkedregistration.json src/invalid_person_linkedregistration.json dist/",
     "dev": "rimraf dist && npm run copy && tsc && node dist/signEwann.js"
   },
   "author": "",

@@ -1,4 +1,3 @@
-import ParserJsonld from '@rdfjs/parser-jsonld';
 import ParserN3 from '@rdfjs/parser-n3';
 import axios from 'axios';
 import crypto from 'crypto';
@@ -7,7 +6,7 @@ import * as jose from 'jose';
 import jsonld from "jsonld";
 import factory from 'rdf-ext';
 import SHACLValidator from 'rdf-validate-shacl';
-import { Readable } from 'stream';
+import {Readable} from 'stream';
 
 interface Proof {
     type: string
@@ -47,10 +46,10 @@ export class SignatureService {
 }
 
 export class SHACLValidationService {
-    parserTTL = new ParserN3({ factory })
+    parserTTL = new ParserN3({factory})
 
     /**
-     * 
+     *
      * @param shape path to the turtle shape file
      * @param data object representing data to validate
      */
@@ -63,7 +62,7 @@ export class SHACLValidationService {
         shapeStr.push(null)
 
 
-        const dataRDF = await jsonld.toRDF(data, { format: 'application/n-quads' });
+        const dataRDF = await jsonld.toRDF(data, {format: 'application/n-quads'});
         const input = new Readable()
         input.push(dataRDF)
         input.push(null)
@@ -74,9 +73,7 @@ export class SHACLValidationService {
 
         const validator = new SHACLValidator(shapes);
 
-        const results = validator.validate(sds);
-        console.log(results.results.map(result => `${result.path} => ${JSON.stringify(result.message[0].value)}`).join("\n"))
-        return results.conforms
+        return validator.validate(sds);
     }
 
 
@@ -91,27 +88,30 @@ async function signEwann(pathToData: string) {
     //Sign credential, then VP
 
     const verifiablePresentation = JSON.parse(payloadJSON.toString())
-    const credentialNormalized = await signService.normalize(verifiablePresentation.verifiableCredential[0])
+    for(const vc of verifiablePresentation.verifiableCredential){
+        const credentialNormalized = await signService.normalize(vc)
 
-    const keyData = fs.readFileSync('dist/privateKey.pem', 'utf-8');
+        const keyData = fs.readFileSync('dist/privateKey.pem', 'utf-8');
 
-    const rsaPrivateKey = await jose.importPKCS8(
-        keyData,
-        'PS256'
-    )
+        const rsaPrivateKey = await jose.importPKCS8(
+            keyData,
+            'PS256'
+        )
 
-    const credentialJws = await new jose.CompactSign(new TextEncoder().encode(signService.hash(credentialNormalized.toString())))
-        .setProtectedHeader({ alg: 'PS256', b64: false, crit: ['b64'] })
-        .sign(rsaPrivateKey)
+        const credentialJws = await new jose.CompactSign(new TextEncoder().encode(signService.hash(credentialNormalized.toString())))
+            .setProtectedHeader({alg: 'PS256', b64: false, crit: ['b64']})
+            .sign(rsaPrivateKey)
 
 
-        verifiablePresentation.verifiableCredential[0].proof = signService.proof(credentialJws);
+        vc.proof = signService.proof(credentialJws);
+
+    }
 
 
     return {
         "@context": "https://www.w3.org/2018/credentials/v1",
         "type": "VerifiablePresentation",
-        "verifiableCredential": [verifiablePresentation.verifiableCredential[0]]
+        "verifiableCredential": verifiablePresentation.verifiableCredential
     };
 }
 
@@ -119,20 +119,18 @@ async function signEwann(pathToData: string) {
 export async function main(payloadPath: string) {
     const shaclValidation = new SHACLValidationService()
 
-    console.warn(`==== ${payloadPath} ====`)
     const sdRegistration = await signEwann(payloadPath);
-    return await shaclValidation.validate("dist/participant.ttl", sdRegistration);
 
-}
-
-async function testRegistration() {
-    console.log(JSON.stringify(await signEwann('dist/registration_vp.json')));
-    console.log(JSON.stringify(await signEwann('dist/registration_vp_invalid.json')));
-
+    const validationResults = await shaclValidation.validate("dist/participant.ttl", sdRegistration);
+    console.warn(`==== ${payloadPath} ==== ${validationResults.conforms}`)
+    console.log(validationResults.results.map(result => `${result.path} => ${JSON.stringify(result.message[0].value)}`).join("\n"))
+    console.log(JSON.stringify(sdRegistration))
+    return validationResults.conforms
 }
 
 main('dist/registration_vp.json');
 main('dist/registration_vp_invalid.json');
 main('dist/person.json');
 main('dist/person_invalid.json');
-testRegistration()
+main('dist/person_linkedregistration.json')
+main('dist/invalid_person_linkedregistration.json')
