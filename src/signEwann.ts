@@ -55,7 +55,7 @@ export class SHACLValidationService {
      */
     async validate(shape: string, data: object) {
 
-        const shapeFromRegistry = (await axios.get("https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/participant")).data
+        const shapeFromRegistry = (await axios.get("https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/trustframework")).data
 
         const shapeStr = new Readable()
         shapeStr.push(shapeFromRegistry)
@@ -121,7 +121,7 @@ export async function main(payloadPath: string) {
 
     const sdRegistration = await signEwann(payloadPath);
 
-    const validationResults = await shaclValidation.validate("dist/participant.ttl", sdRegistration);
+    const validationResults = await shaclValidation.validate("dist/trustframework.ttl", sdRegistration);
     console.warn(`==== ${payloadPath} ==== ${validationResults.conforms}`)
     console.log(validationResults.results.map(result => `${result.path} => ${JSON.stringify(result.message[0].value)}`).join("\n"))
     console.log(JSON.stringify(sdRegistration))

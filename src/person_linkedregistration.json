@@ -5,8 +5,7 @@
     {
       "@context": [
         "https://www.w3.org/2018/credentials/v1",
-        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#",
-        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#"
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
       ],
       "type": [
         "VerifiableCredential"
@@ -36,7 +35,7 @@
       "type": "VerifiableCredential",
       "id": "http://participantID/registrationNumber/1664629337488/data.json",
       "credentialSubject": {
-        "@context": "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#",
+        "@context": "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#",
         "type": "gx:legalRegistrationNumber",
         "id": "http://participantID",
         "gx:vatID": "FR63533150041"
