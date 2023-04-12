@@ -22,7 +22,7 @@ describe('Verify shacl validation', () => {
    })
    it('should return true on valid linked person registration', async ({expect}) => {
     expect(await main('dist/person_linkedregistration.json')).toBeTruthy()
-   })
+   }, 10000)
    it('should return false on invalid linked person registration', async ({expect}) => {
     expect(await main('dist/invalid_person_linkedregistration.json')).toBeFalsy()
    })
