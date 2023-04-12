@@ -26,4 +26,13 @@ describe('Verify shacl validation', () => {
    it('should return false on invalid linked person registration', async ({expect}) => {
     expect(await main('dist/invalid_person_linkedregistration.json')).toBeFalsy()
    })
+   it('should return true on valid service offering with legal participant', async ({expect}) => {
+    expect(await main('dist/service-offering.json')).toBeTruthy()
+   })
+   it('should return false on invalid service offering credential', async ({expect}) => {
+    expect(await main('dist/service-offering_bad_structure.json')).toBeFalsy()
+   })
+   it('should return false on invalid linked service-offering providedBy', async ({expect}) => {
+    expect(await main('dist/service-offering_bad_provided_by.json')).toBeFalsy()
+   })
 })

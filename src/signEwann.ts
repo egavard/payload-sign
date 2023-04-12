@@ -125,14 +125,15 @@ export async function main(payloadPath: string) {
     console.warn(`==== ${payloadPath} ==== ${validationResults.conforms}`)
     console.log(validationResults.results.map(result => `${result.path} => ${JSON.stringify(result.message[0].value)}`).join("\n"))
     console.log(JSON.stringify(sdRegistration))
-    if(validationResults.conforms){
-        const complianceResult = await axios.post("https://compliance.lab.gaia-x.eu/development/api/credential-offers",sdRegistration)
-        console.log(JSON.stringify(complianceResult.data))
-        console.log(complianceResult.status)
-    }
+    // if(validationResults.conforms){
+    //     const complianceResult = await axios.post("https://compliance.lab.gaia-x.eu/development/api/credential-offers",sdRegistration)
+    //     console.log(JSON.stringify(complianceResult.data))
+    //     console.log(complianceResult.status)
+    // }
     return validationResults.conforms
 }
 
+main('dist/service-offering.json');
 main('dist/registration_vp.json');
 main('dist/registration_vp_invalid.json');
 main('dist/person.json');
