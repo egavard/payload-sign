@@ -43,6 +43,10 @@ export class SignatureService {
         })
     }
 
+    async normalize2206(payload: object) {
+        return (await axios.post('https://compliance.lab.gaia-x.eu/2206-unreleased/api/normalize', payload)).data;
+    }
+
 }
 
 export class SHACLValidationService {
@@ -75,9 +79,8 @@ export class SHACLValidationService {
 
         return validator.validate(sds);
     }
-
-
 }
+
 
 async function signEwann(pathToData: string) {
 
@@ -88,7 +91,7 @@ async function signEwann(pathToData: string) {
     //Sign credential, then VP
 
     const verifiablePresentation = JSON.parse(payloadJSON.toString())
-    for(const vc of verifiablePresentation.verifiableCredential){
+    for (const vc of verifiablePresentation.verifiableCredential) {
         const credentialNormalized = await signService.normalize(vc)
 
         const keyData = fs.readFileSync('dist/privateKey.pem', 'utf-8');
@@ -115,7 +118,6 @@ async function signEwann(pathToData: string) {
     };
 }
 
-
 export async function main(payloadPath: string) {
     const shaclValidation = new SHACLValidationService()
 
@@ -133,10 +135,60 @@ export async function main(payloadPath: string) {
     return validationResults.conforms
 }
 
-main('dist/service-offering.json');
-main('dist/registration_vp.json');
-main('dist/registration_vp_invalid.json');
-main('dist/person.json');
-main('dist/person_invalid.json');
-main('dist/person_linkedregistration.json')
-main('dist/invalid_person_linkedregistration.json')
+async function signEwann2206(pathToData: string) {
+
+    const payloadJSON = fs.readFileSync(pathToData, 'utf-8');
+    const signService = new SignatureService();
+
+
+    //Sign credential, then VP
+
+    const vc = JSON.parse(payloadJSON.toString())
+    const credentialNormalized = await signService.normalize2206(vc)
+
+    const keyData = fs.readFileSync('dist/privateKey.pem', 'utf-8');
+
+    const rsaPrivateKey = await jose.importPKCS8(
+        keyData,
+        'PS256'
+    )
+
+    const credentialJws = await new jose.CompactSign(new TextEncoder().encode(signService.hash(credentialNormalized.toString())))
+        .setProtectedHeader({alg: 'PS256', b64: false, crit: ['b64']})
+        .sign(rsaPrivateKey)
+
+
+    vc.proof = signService.proof(credentialJws);
+
+
+    return vc;
+}
+
+export async function main2206(payloadPath: string) {
+    const shaclValidation = new SHACLValidationService()
+
+    const sdRegistration = await signEwann2206(payloadPath);
+
+    const validationResults = await shaclValidation.validate("dist/trustframework.ttl", sdRegistration);
+    console.warn(`==== ${payloadPath} ==== ${validationResults.conforms}`)
+    console.log(validationResults.results.map(result => `${result.path} => ${JSON.stringify(result.message[0].value)}`).join("\n"))
+    console.log(JSON.stringify(sdRegistration))
+    // if(validationResults.conforms){
+    //     const complianceResult = await axios.post("https://compliance.lab.gaia-x.eu/development/api/credential-offers",sdRegistration)
+    //     console.log(JSON.stringify(complianceResult.data))
+    //     console.log(complianceResult.status)
+    // }
+    return validationResults.conforms
+}
+
+
+// main('dist/service-offering.json');
+// main('dist/registration_vp.json');
+// main('dist/registration_vp_invalid.json');
+// main('dist/person.json');
+// main('dist/person_invalid.json');
+// main('dist/person_linkedregistration.json')
+// main('dist/invalid_person_linkedregistration.json')
+main('dist/invalid-service-offering-type.json')
+// main2206('dist/participant-sd.json')
+// main2206('dist/service-sd.json')
